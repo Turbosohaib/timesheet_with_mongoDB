@@ -30,26 +30,16 @@ function Table({ projectsData }) {
         }
         if (newProject.name != "" && dayFillStatus) {
             newProject.id = projects.length + 1;
-            const result = await axios.post('/api/manageProject', {
+            const result = await axios.post('/api/addProject', {
                 project: newProject
             });
-            console.log(result.data);
             setProjects(result.data.projects);
-            // setProjects((prevProject) => {
-            //     return [...prevProject, newProject]
-            // })
         }
     }
 
     async function deleteProject(id) {
-
-        const res = await axios.post('/api/deleteProject', id);
-        setProjects((prevProjects) => {
-            return prevProjects.filter((project, index) => {
-                return index + 1 !== id
-            })
-        })
-
+        const result = await axios.post('/api/deleteProject', id);
+        setProjects(result.data.projects);
     }
 
     return (
@@ -74,12 +64,11 @@ function Table({ projectsData }) {
                     <CreateProject onAdd={addProject}
                         project={project}
                         setProject={(project) => setProject(project)} />
-                    {projects.map((projectItem, index) => {
+                    {projects.map((projectItem) => {
                         return (
                             <Project
                                 onDelete={deleteProject}
-                                key={index}
-                                id={index + 1}
+                                key={projectItem.id}
                                 project={projectItem}
                                 projects={projects}
                                 setProjects={(projects) => setProjects(projects)}

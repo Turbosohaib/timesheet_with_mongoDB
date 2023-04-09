@@ -5,3 +5,7 @@
 .w-80 {
     width: 80px;
 }
+
+.pointer {
+    cursor: pointer;
+}

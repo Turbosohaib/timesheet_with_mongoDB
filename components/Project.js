@@ -3,13 +3,13 @@ import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
 import axios from "axios";
 
 
-function Project({ id, onDelete, project, projects, setProjects }) {
+function Project({ onDelete, project, projects, setProjects }) {
 
 
     const [editRecords, setEditRecords] = useState({})
 
     function handleClick() {
-        onDelete(id)
+        onDelete(project.id)
     }
 
     function handleEdit(id) {
@@ -35,20 +35,10 @@ function Project({ id, onDelete, project, projects, setProjects }) {
 
 
     async function setUpdate() {
-
-        const result = axios.post('api/updateProject', {
+        const result = await axios.post('api/updateProject', {
             project: editRecords
         });
-        console.log(projects)
-        console.log(editRecords)
-        var updatedProjects = projects;
-        var index = updatedProjects.findIndex((obj) => obj.id == editRecords.id);
-        for (const key in editRecords) {
-            if (key !== "id") {
-                updatedProjects[index][key] = editRecords[key];
-            }
-        }
-        setProjects(updatedProjects)
+        setProjects(result.data.projects)
         setEditRecords({});
     }
 
@@ -77,11 +67,11 @@ function Project({ id, onDelete, project, projects, setProjects }) {
         <tr className="hover:bg-gray-50">
             <th className="flex gap-3 px-6 py-4 font-normal text-gray-900">
                 <div className="text-sm">
-                    <div className="font-medium text-gray-700">{id}</div>
+                    <div className="font-medium text-gray-700">{project.id}</div>
                 </div>
             </th>
 
-            {editRecords.id == id ? (
+            {editRecords.id == project.id ? (
                 <td className="px-6 py-4">
                     <input type="text" name="name" onChange={handleUpdate} defaultValue={project.name} className="py-1 px-2 w-100  rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" placeholder="Name" />
                 </td>
@@ -90,7 +80,7 @@ function Project({ id, onDelete, project, projects, setProjects }) {
                     <strong>{project.name}</strong>
                 </td>
             )}
-            {editRecords.id == id ? (
+            {editRecords.id == project.id ? (
                 <td className="px-6 py-4">
                     <input type="text" name="mon" onChange={handleUpdate} defaultValue={project.mon} className="py-1 px-2 w-full  rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 w-80" placeholder="hr" />
                 </td>
@@ -99,7 +89,7 @@ function Project({ id, onDelete, project, projects, setProjects }) {
                     <strong>{project.mon}</strong>
                 </td>
             )}
-            {editRecords.id == id ? (
+            {editRecords.id == project.id ? (
                 <td className="px-6 py-4">
                     <input type="text" name="tues" onChange={handleUpdate} defaultValue={project.tues} className="py-1 px-2 w-full  rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 w-80" placeholder="hr" />
                 </td>
@@ -109,7 +99,7 @@ function Project({ id, onDelete, project, projects, setProjects }) {
                     <strong>{project.tues}</strong>
                 </td>
             )}
-            {editRecords.id == id ? (
+            {editRecords.id == project.id ? (
                 <td className="px-6 py-4">
                     <input type="text" name="wed" onChange={handleUpdate} defaultValue={project.wed} className="py-1 px-2 w-full  rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 w-80" placeholder="hr" />
                 </td>
@@ -119,7 +109,7 @@ function Project({ id, onDelete, project, projects, setProjects }) {
                 </td>
 
             )}
-            {editRecords.id == id ? (
+            {editRecords.id == project.id ? (
                 <td className="px-6 py-4">
                     <input type="text" name="thur" onChange={handleUpdate} defaultValue={project.thur} className="py-1 px-2 w-full  rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 w-80" placeholder="hr" />
                 </td>
@@ -128,18 +118,17 @@ function Project({ id, onDelete, project, projects, setProjects }) {
                     <strong>{project.thur}</strong>
                 </td>
             )}
-            {
-                editRecords.id == id ? (
-                    <td className="px-6 py-4">
-                        <input type="text" name="fri" onChange={handleUpdate} defaultValue={project.fri} className="py-1 px-2 w-full  rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" placeholder="hr" />
-                    </td>
-                ) : (
-                    <td className="px-6 py-4">
-                        <strong>{project.fri}</strong>
-                    </td>
-                )
+            {editRecords.id == project.id ? (
+                <td className="px-6 py-4">
+                    <input type="text" name="fri" onChange={handleUpdate} defaultValue={project.fri} className="py-1 px-2 w-full  rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" placeholder="hr" />
+                </td>
+            ) : (
+                <td className="px-6 py-4">
+                    <strong>{project.fri}</strong>
+                </td>
+            )
             }
-            {editRecords.id == id ? (
+            {editRecords.id == project.id ? (
                 <td className="px-6 py-4">
                     <input type="text" name="sat" onChange={handleUpdate} defaultValue={project.sat} className="py-1 px-2 w-full  rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 w-80" placeholder="hr" />
                 </td>
@@ -150,7 +139,7 @@ function Project({ id, onDelete, project, projects, setProjects }) {
             )}
             <td className="px-6 py-4">
                 <div className="flex justify-middle gap-4">
-                    <a onClick={handleClick} >
+                    <a onClick={handleClick} className="pointer" >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -158,7 +147,7 @@ function Project({ id, onDelete, project, projects, setProjects }) {
                             strokeWidth="1.5"
                             stroke="currentColor"
                             className="h-6 w-6"
-                            x-tooltip="tooltip"
+                            xTooltip="tooltip"
                         >
                             <path
                                 strokeLinecap="round"
@@ -168,22 +157,22 @@ function Project({ id, onDelete, project, projects, setProjects }) {
                         </svg>
                     </a>
                     <strong></strong>
-                    {editRecords.id == id ? <a onClick={setUpdate} >
+                    {editRecords.id == project.id ? <a onClick={setUpdate} className="pointer" >
                         <DoneOutlineIcon />
                     </a> :
-                        <a onClick={() => handleEdit(id)} >
+                        <a onClick={() => handleEdit(project.id)} className="pointer" >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
-                                stroke-width="1.5"
+                                strokeWidth="1.5"
                                 stroke="currentColor"
                                 class="h-6 w-6"
-                                x-tooltip="tooltip"
+                                xTooltip="tooltip"
                             >
                                 <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
                                     d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
                                 />
                             </svg>

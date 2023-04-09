@@ -4,14 +4,10 @@ export default async function handler(req, res) {
     try {
         const client = await clientPromise;
         const db = client.db("Projects_timesheet");
-
         const project = await db.collection("project").insertOne(req.body.project);
-
         const projects = await db
             .collection("project")
             .find({})
-            // .sort({ metacritic: -1 })
-            // .limit(1)
             .toArray();
 
         res.json({

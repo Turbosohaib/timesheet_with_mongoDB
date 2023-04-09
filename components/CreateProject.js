@@ -1,4 +1,3 @@
-import React, { useState } from "react"
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 
@@ -79,7 +78,7 @@ function CreateProject({ project, setProject, onAdd }) {
             </td>
             <td className="px-6 py-4">
                 <span onClick={onSubmit}
-                    className="flex justify-middle gap-4">
+                    className="flex justify-middle gap-4 pointer">
                     <AddCircleOutlineIcon />
                 </span>
             </td>

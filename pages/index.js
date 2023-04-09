@@ -23,7 +23,6 @@ export async function getServerSideProps() {
 }
 
 export default function Home({ projects }) {
-  console.log(projects)
   return (
     <>
       <div className="bg-gray-800 text-white">

@@ -5,8 +5,15 @@ export default async function handler(req, res) {
         const client = await clientPromise;
         const db = client.db("Projects_timesheet");
         const project = await db.collection("project").deleteOne(req.body.id);
+
+        const projects = await db
+            .collection("project")
+            .find({})
+            .toArray();
+
         res.json({
             project,
+            projects
         });
     } catch (e) {
         console.error(e)
