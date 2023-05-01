@@ -32,8 +32,8 @@ function CreateProject({ project, setProject, onAdd }) {
 
 
     return (
-        <tr className="hover:bg-gray-50">
-            <th className="flex gap-3 px-6 py-4 font-normal text-gray-900">
+        <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 <div className="text-sm">
                     <div className="font-medium text-gray-700">#</div>
                 </div>
