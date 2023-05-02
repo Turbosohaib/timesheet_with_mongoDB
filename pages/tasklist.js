@@ -19,7 +19,7 @@ export default function tasklist() {
                                 <span class="text-sm">Archive</span>
                             </button>
                         </div>
-                        <div class="text-lg font-bold">Time Tracker</div>
+                        <div class="text-lg font-bold">Task List</div>
                         <div>
                             <button type="button" class="flex items-center focus:outline-none rounded-lg text-gray-600 hover:text-yellow-600 focus:text-yellow-600 font-semibold p-2 border border-transparent hover:border-yellow-300 focus:border-yellow-300 transition">
                                 <span class="text-sm">This week</span>

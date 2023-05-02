@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Timetracker from "../components/timetracker"
 import clientPromise from "../util/mongodb"
 import formatTime from "../util/commonFunctions";
@@ -30,9 +30,34 @@ export async function getServerSideProps() {
 
 export default function Home({ tasks }) {
   const [tasksData, setTasksData] = useState(tasks);
+  const [resumeTime, setResumeTime] = useState();
+  const [startTimer, setStartTimer] = useState(false);
+  const [trackTime, setTrackTime] = useState({
+    startTime: null,
+    stopTime: null,
+    taskName: null,
+    project: null,
+    seconds: 0
+  });
 
+  var projects = [
+    { id: 1, name: 'Cx' },
+    { id: 2, name: 'Ce' },
+    { id: 3, name: 'Djb' },
+    { id: 4, name: 'Lc' }
+  ];
 
-  async function deleteTask(taskId) {
+  const startCounter = (resume = false) => {
+    console.log('Start Timer!');
+    setStartTimer(true);
+    if (!resume) {
+      var startTime = Date.now();
+      setTrackTime({ ...trackTime, startTime });
+      console.log('Start Time', startTime);
+    }
+  }
+
+  const deleteTask = async (taskId) => {
     const result = await axios.post('/api/deleteTask', { taskId })
       .then((response) => {
         setTasksData(response.data.tasks);
@@ -71,7 +96,14 @@ export default function Home({ tasks }) {
     return timeString
   }
 
+  function handleClick(task) {
+    startCounter(true);
+    setTrackTime(task);
+  }
 
+  useEffect(() => {
+    console.log('Track time', trackTime)
+  }, [trackTime]);
 
   return (
     <div class="relative bg-yellow-50 overflow-hidden max-h-screen">
@@ -157,7 +189,14 @@ export default function Home({ tasks }) {
       <main class="ml-60 pt-16 max-h-screen overflow-auto">
         <div class="px-6 py-8">
           <div class="max-w-4x1 mx-auto">
-            <Timetracker setTasksData={setTasksData} />
+            <Timetracker
+              setTasksData={setTasksData}
+              trackTime={trackTime}
+              setTrackTime={setTrackTime}
+              startCounter={(resume) => startCounter(resume)}
+              startTimer={startTimer}
+              setStartTimer={setStartTimer}
+              projects={projects} />
             {tasksData.map((task) => {
               return (
                 <table class="table-auto w-full text-sm text-left text-gray-500 dark:text-gray-400 mt-5">
@@ -183,17 +222,13 @@ export default function Home({ tasks }) {
                   <tbody>
                     <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
                       <td scope="row" class="sticky px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <div class="grid grid-rows-1 grid-flow-col gap-4">
-                          <div class="col-span-2">
-                            {task.taskName}
-                          </div>
-                        </div>
+                        {task.taskName}
                       </td>
                       <td class="sticky font-bold dark:text-white px-6 py-4">
                         <div class="grid grid-rows-1 grid-flow-col gap-4">
                           <div class="col-span-2">
-                            {task.project}
-                          </div>
+                            {projects.filter((project) => project.id == task.project)
+                              .map((filteredProject) => filteredProject.name)}                          </div>
                         </div>
                       </td>
                       <td class="sticky font-bold dark:text-white px-6 py-4">
@@ -205,7 +240,7 @@ export default function Home({ tasks }) {
                         </div>
                       </td>
                       <td class="sticky px-6 py-4">
-                        <a>
+                        <a className="pointer" onClick={() => handleClick(task)} >
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
                           </svg>
@@ -255,7 +290,7 @@ export default function Home({ tasks }) {
             })}
           </div>
         </div>
-      </main>
-    </div>
+      </main >
+    </div >
   )
 }
