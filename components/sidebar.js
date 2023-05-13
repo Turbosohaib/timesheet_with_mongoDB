@@ -1,4 +1,4 @@
-import formatTime from "../util/commonFunctions";
+import { formatTime } from "../util/commonFunctions";
 
 
 function Sidebar({ startTimer, trackTime }) {

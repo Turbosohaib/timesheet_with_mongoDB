@@ -4,31 +4,69 @@ import Sidebar from "../components/sidebar";
 import { useState } from "react";
 import Dropdown from '../components/dropdown';
 import Head from 'next/head'
+import { formatTime } from "../util/commonFunctions";
+
 
 
 export async function getServerSideProps() {
     const client = await clientPromise;
-    const db = client.db("Projects_timesheet");
+    const db = client.db("time-tracker");
 
-    const projects = EJSON.serialize(await db
-        .collection("project")
+    const tasks = EJSON.serialize(await db
+        .collection("tasktimemanager")
         .find({})
         .toArray());
 
 
-    console.log(projects)
-
     return {
         props: {
-            projects
+            tasks
         }
     }
 }
 
 
 
-export default function Timesheet() {
+export default function Timesheet({ tasks }) {
 
+    const projectSum = {};
+
+    function sumTimeForProject(project, tasks) {
+        let projectTime = 0;
+        tasks.forEach(task => {
+            if (task.project === project) {
+                projectTime += task.seconds;
+                if (task.parentTaskId) {
+                    projectTime += sumTimeForTask(task, tasks);
+                }
+            }
+        });
+        return projectTime;
+    }
+
+    function sumTimeForTask(task, tasks) {
+        let taskTime = 0;
+        tasks.forEach(subtask => {
+            if (subtask.parentTaskId === task._id.$oid) {
+                taskTime += subtask.seconds;
+                taskTime += sumTimeForTask(subtask, tasks);
+            }
+        });
+        return taskTime;
+    }
+
+    tasks.forEach(task => {
+        if (!projectSum[task.project]) {
+            projectSum[task.project] = sumTimeForProject(task.project, tasks);
+        }
+    });
+
+    const projectSumArray = Object.keys(projectSum).map(project => ({
+        project,
+        totalSeconds: projectSum[project],
+    }));
+
+    console.log(projectSumArray);
 
     return (
         <>
@@ -64,18 +102,24 @@ export default function Timesheet() {
 
                                 </div>
                             </div>
-                            <div className="flex border border-x-fuchsia-200 max-w-full h-16 bg-white">
-                                <div className=" border-r px-5 py-5 w-2/4 h-15">
-                                    <p>Cloning</p>
-                                </div>
+                            {projectSumArray.map((project, index) => {
+                                return (
+                                    <div key={index} className="flex border border-x-fuchsia-200 max-w-full h-16 bg-white">
+                                        <div className=" border-r px-5 py-5 w-2/4 h-15">
+                                            <p>{project.project}</p>
+                                        </div>
 
-                                <div className=" border-r w-2/4 h-15">
-                                    <p className="px-5 py-5">300h</p>
-                                </div>
-                                <div className="px-4 py-3">
-                                    <Dropdown />
-                                </div>
-                            </div>
+                                        <div className=" border-r w-2/4 h-15">
+                                            <p className="px-5 py-5">{formatTime(project.totalSeconds)}</p>
+                                        </div>
+                                        <div className="px-4 py-3">
+                                            <Dropdown />
+                                        </div>
+                                    </div>
+                                );
+                            })}
+
+
                         </div>
                     </div>
                 </main>

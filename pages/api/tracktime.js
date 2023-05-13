@@ -1,4 +1,5 @@
 import clientPromise from "../../util/mongodb";
+import { calculateTotalSeconds } from '../../util/commonFunctions'
 import { EJSON, ObjectId } from "bson";
 
 export default async function handler(req, res) {
@@ -25,7 +26,7 @@ export default async function handler(req, res) {
 
         res.json({
             task,
-            tasks
+            tasks: calculateTotalSeconds(tasks)
         });
     } catch (e) {
         console.error(e);

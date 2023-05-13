@@ -1,20 +1,16 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import formatTime from "../util/commonFunctions";
+import { formatTime, unhideCurrentActiveParentChilds } from "../util/commonFunctions";
+
 
 export default function Timetracker({ setTasksData, trackTime, setTrackTime, startCounter, startTimer, setStartTimer, projects }) {
 
     async function handleSubmit() {
-        // console.log('Stop Timer!');
         setStartTimer(false);
 
         var stopTime = Date.now();
         var newEntry = { ...trackTime, stopTime }
         setTrackTime(newEntry);
-        // console.log('Stop Time', stopTime);
-
-        console.log(newEntry)
-
 
         const result = await axios.post('api/tracktime', {
             data: newEntry
@@ -22,8 +18,13 @@ export default function Timetracker({ setTasksData, trackTime, setTrackTime, sta
             .then(response => {
                 setTasksData(response.data.tasks);
                 setTrackTime({
-
+                    startTime: null,
+                    stopTime: null,
+                    taskName: null,
+                    project: "",
+                    seconds: 0
                 })
+                unhideCurrentActiveParentChilds()
             })
             .catch(error => {
                 console.error(error);
@@ -36,6 +37,7 @@ export default function Timetracker({ setTasksData, trackTime, setTrackTime, sta
             stopTime: null,
             seconds: 0
         })
+
     }
 
     function handleChange(e) {
@@ -66,16 +68,16 @@ export default function Timetracker({ setTasksData, trackTime, setTrackTime, sta
         <>
             <div>
                 <div>
-                    <div className="flex border shadow-lg  max-w-full h-14 bg-white mb-8">
+                    <div className="flex border shadow-lg border-x border-y rounded  max-w-full h-14 bg-white mb-8">
                         <div className="px-2 py-1.5 w-full"><input value={trackTime && trackTime.taskName ? trackTime.taskName : ''} onChange={handleChange} type="text" id="taskName" name="taskName" placeholder="What are you working on?" className="border w-full py-2.5 px-4 text-gray-700 leading-tight placeholder:text-dark-500" />
                         </div>
                         <div className="border-r px-4 py-1.5 h-10 w-22  mt-2">
                             <div className="flex pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <select id="project" name="project" className="pointer" onChange={handleChange} value={trackTime.project}>
-                                    <option selected>Project</option>
+                                <select id="project" name="project" placeholder="Project" className="pointer" onChange={handleChange} value={trackTime.project}>
+                                    <option value="" disabled>Project</option>
                                     {projects.map((project) => {
                                         ''
                                         return (<option key={project.id} value={project.id}>{project.name}</option>)
@@ -92,7 +94,7 @@ export default function Timetracker({ setTasksData, trackTime, setTrackTime, sta
                             </button>
                         </div>
                         <div className="border-r w-22 pr-3 mx-2 my-1.5">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-currency-pound" width="35" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-currency-pound" width="35" height="44" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#2c3e50" fill="none" strokeLinecap="round" strokeLinejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                 <path d="M17 18.5a6 6 0 0 1 -5 0a6 6 0 0 0 -5 .5a3 3 0 0 0 2 -2.5v-7.5a4 4 0 0 1 7.45 -2m-2.55 6h-7" />
                             </svg>
@@ -108,7 +110,7 @@ export default function Timetracker({ setTasksData, trackTime, setTrackTime, sta
                         </div>
                         <div>
                             <button className="mr-3 ml-2 my-1.5">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="25" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-x" width="25" height="44" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#2c3e50" fill="none" strokeLinecap="round" strokeLinejoin="round">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                                     <line x1="18" y1="6" x2="6" y2="18" />
                                     <line x1="6" y1="6" x2="18" y2="18" />
