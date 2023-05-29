@@ -1,6 +1,6 @@
 
 $(document).ready(function () {
-    $('.parent').on('click', function (e) {
+    $(document).on('click', '.parent', function (e) {
         if (!$(e.target).parents('.noClickZone').length) {
             $(this).find('.child').toggleClass('hidden');
         }

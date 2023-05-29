@@ -106,8 +106,8 @@ export default function Home({ tasks }) {
       <Head>
         <link rel="icon" href="/icons8-clock-16.png" />
         <title>{startTimer ? formatTime(trackTime.seconds) + " Time Tracker" : "Task Manager"}</title>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
       </Head>
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
       <script src="/common.js" />
       <div>
         <Sidebar
