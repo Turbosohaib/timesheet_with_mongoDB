@@ -89,24 +89,13 @@ export default function Home({ tasks }) {
   }
 
 
-  function handleChange(e) {
-    const { name, value } = event.target;
-
-    setTrackTime((pervTask) => {
-      return {
-        ...pervTask,
-        [name]: value
-      }
-    })
-  }
-
-  function handleSubmit(taskId) {
-    setEdit((prevId) => {
-      return {
-        taskId
-      }
-    })
-  }
+  // function handleSubmit(taskId) {
+  //   setEdit((prevId) => {
+  //     return {
+  //       taskId
+  //     }
+  //   })
+  // }
 
   useEffect(() => {
 
@@ -117,6 +106,7 @@ export default function Home({ tasks }) {
       <Head>
         <link rel="icon" href="/icons8-clock-16.png" />
         <title>{startTimer ? formatTime(trackTime.seconds) + " Time Tracker" : "Task Manager"}</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
       </Head>
       <script src="/common.js" />
       <div>
@@ -221,7 +211,7 @@ export default function Home({ tasks }) {
                                 {/* {edit.taskId == task._id.$oid ? <a className="ml-4">
                               <button type="submit"><DoneOutlineIcon /></button>
                             </a> : */}
-                                <a onClick={() => handleSubmit(task._id.$oid)} className="pl-6 pointer" >
+                                <a className="pl-6 pointer" >
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
@@ -309,7 +299,7 @@ export default function Home({ tasks }) {
                                         {/* {edit.taskId == task._id.$oid ? <a className="ml-4">
                               <button type="submit"><DoneOutlineIcon /></button>
                             </a> : */}
-                                        <a onClick={() => handleSubmit(childTask._id.$oid)} className="pl-6 pointer" >
+                                        <a className="pl-6 pointer" >
                                           <svg
                                             xmlns="http://www.w3.org/2000/svg"
                                             fill="none"
