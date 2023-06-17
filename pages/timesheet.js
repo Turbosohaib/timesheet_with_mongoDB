@@ -5,31 +5,39 @@ import { useState } from "react";
 import Dropdown from '../components/dropdown';
 import Head from 'next/head'
 import { formatTime } from "../util/commonFunctions";
+import axios from "axios";
+import Link from 'next/link'
 
 
 
 export async function getServerSideProps() {
     const client = await clientPromise;
     const db = client.db("time-tracker");
-
     const tasks = EJSON.serialize(await db
         .collection("tasktimemanager")
+        .find({})
+        .toArray());
+
+    const projectDb = client.db("Projects_timesheet")
+    const projects = EJSON.serialize(await projectDb
+        .collection("project")
         .find({})
         .toArray());
 
 
     return {
         props: {
-            tasks
+            tasks,
+            projects
         }
     }
 }
 
 
 
-export default function Timesheet({ tasks }) {
-
-    const projectSum = {};
+export default function Timesheet({ tasks, projects }) {
+    const [projectName, setProjectName] = useState({})
+    const projectSum = [];
 
     function sumTimeForProject(project, tasks) {
         let projectTime = 0;
@@ -56,17 +64,35 @@ export default function Timesheet({ tasks }) {
     }
 
     tasks.forEach(task => {
-        if (!projectSum[task.project]) {
-            projectSum[task.project] = sumTimeForProject(task.project, tasks);
+        var project = projects.filter((project) => task.project == project._id.$oid)[0];
+        var checkProject = projectSum.filter((sumProject) => sumProject.id == task.project);
+        if (!checkProject.length) {
+            projectSum.push({
+                id: project._id.$oid,
+                name: project.value,
+                sum: sumTimeForProject(task.project, tasks)
+            });
         }
     });
 
-    const projectSumArray = Object.keys(projectSum).map(project => ({
-        project,
-        totalSeconds: projectSum[project],
-    }));
+    function handleChange(e) {
+        const value = e.target.value;
+        setProjectName((prevItem) => {
+            return {
+                ...prevItem,
+                value: value
+            }
+        })
 
-    console.log(projectSumArray);
+    }
+
+    console.log(projectName)
+
+    async function handleSubmit() {
+        const result = await axios.post('/api/addProject', { projectName })
+        setProjectName({ value: '' });
+    }
+
 
     return (
         <>
@@ -81,9 +107,9 @@ export default function Timesheet({ tasks }) {
                         <h1 className="text-3xl ml-8 ">Projects</h1>
                         <div className="mt-8 max-w-4x1 mx-auto">
                             <div className="flex border  max-w-full h-14 bg-white mb-8">
-                                <div className="px-2 py-1.5 w-full"><input className="border w-full py-2.5 px-4 text-gray-700 leading-tight placeholder:text-dark-500" type="text" placeholder="Add Project" />
+                                <div className="px-2 py-1.5 w-full"><input onChange={handleChange} value={projectName.value} className="border w-full py-2.5 px-4 text-gray-700 leading-tight placeholder:text-dark-500" type="text" placeholder="Add Project" />
                                 </div>
-                                <div className=" h-14 w-24"><button className=" hover:bg-sky-300 text-gray-800 font-semibold mt-1 mr-1.5 py-2.5 px-6 border">
+                                <div className=" h-14 w-24"><button onClick={handleSubmit} type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold mt-1 mr-1.5 py-2.5 px-6 border">
                                     Add
                                 </button></div>
                             </div>
@@ -102,15 +128,14 @@ export default function Timesheet({ tasks }) {
 
                                 </div>
                             </div>
-                            {projectSumArray.map((project, index) => {
+                            {projectSum.map((project, index) => {
                                 return (
                                     <div key={index} className="flex border border-x-fuchsia-200 max-w-full h-16 bg-white">
-                                        <div className=" border-r px-5 py-5 w-2/4 h-15">
-                                            <p>{project.project}</p>
+                                        <div className="pointer border-r px-5 py-5 w-2/4 h-15">
+                                            <p>{project.name}</p>
                                         </div>
-
                                         <div className=" border-r w-2/4 h-15">
-                                            <p className="px-5 py-5">{formatTime(project.totalSeconds)}</p>
+                                            <p className="px-5 py-5">{formatTime(project.sum)}</p>
                                         </div>
                                         <div className="px-4 py-3">
                                             <Dropdown />
@@ -122,8 +147,8 @@ export default function Timesheet({ tasks }) {
 
                         </div>
                     </div>
-                </main>
-            </div>
+                </main >
+            </div >
         </>
     )
 }

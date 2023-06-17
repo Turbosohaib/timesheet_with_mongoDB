@@ -3,6 +3,10 @@ import axios from "axios";
 import { formatTime, unhideCurrentActiveParentChilds } from "../util/commonFunctions";
 
 
+
+
+
+
 export default function Timetracker({ setTasksData, trackTime, setTrackTime, startCounter, startTimer, setStartTimer, projects }) {
 
     async function handleSubmit() {
@@ -80,7 +84,7 @@ export default function Timetracker({ setTasksData, trackTime, setTrackTime, sta
                                     <option value="" disabled>Project</option>
                                     {projects.map((project) => {
                                         ''
-                                        return (<option key={project.id} value={project.id}>{project.name}</option>)
+                                        return (<option key={project._id.$oid} value={project._id.$oid}>{project.value}</option>)
                                     })}
                                 </select>
                             </div>
