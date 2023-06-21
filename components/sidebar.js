@@ -1,7 +1,12 @@
 import { formatTime } from "../util/commonFunctions";
+import { signOut } from 'next-auth/react';
+import Link from 'next/link'
+
 
 
 function Sidebar({ startTimer, trackTime }) {
+
+
 
 
     return (
@@ -44,7 +49,7 @@ function Sidebar({ startTimer, trackTime }) {
                         <div className="p-4">
                             <ul className="space-y-1">
                                 <li>
-                                    <a href="/dashboard" className="flex items-center bg-yellow-200 rounded-xl font-bold text-sm text-yellow-900 py-3 px-4">
+                                    <a href="/" className="flex items-center bg-yellow-200 rounded-xl font-bold text-sm text-yellow-900 py-3 px-4">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-2">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
@@ -76,11 +81,12 @@ function Sidebar({ startTimer, trackTime }) {
                         </div>
                     </div>
                     <div className="p-4">
-                        <button type="button" className="inline-flex items-center justify-center h-9 px-4 rounded-xl bg-gray-900 text-gray-300 hover:text-white text-sm font-semibold transition">
+                        <Link href='/api/auth/signout'
+                            className="inline-flex items-center justify-center h-9 px-4 rounded-xl bg-gray-900 text-gray-300 hover:text-white text-sm font-semibold transition">
                             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" className="" viewBox="0 0 16 16">
                                 <path d="M12 1a1 1 0 0 1 1 1v13h1.5a.5.5 0 0 1 0 1h-13a.5.5 0 0 1 0-1H3V2a1 1 0 0 1 1-1h8zm-2 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
                             </svg>
-                        </button> <span className="font-bold text-sm ml-2">Logout</span>
+                        </Link> <span className="font-bold text-sm ml-2">Logout</span>
                     </div>
                 </div>
             </aside>

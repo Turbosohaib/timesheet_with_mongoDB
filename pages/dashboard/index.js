@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
-import Timetracker from "../components/timetracker"
-import clientPromise from "../util/mongodb"
-import { formatTime, formatRecordTime, calculateTotalSeconds } from "../util/commonFunctions";
+import Timetracker from "../../components/timetracker"
+import clientPromise from "../../util/mongodb"
+import { formatTime, formatRecordTime, calculateTotalSeconds } from "../../util/commonFunctions";
 import { EJSON } from "bson";
 import axios from "axios";
 import Head from 'next/head'
-import script from 'next/script'
-import Sidebar from "../components/sidebar"
+import script from 'next/script';
+import Sidebar from "../../components/sidebar"
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
+import { getSession } from "next-auth/react";
 
 
-export async function getServerSideProps() {
+export async function getServerSideProps({ req }) {
+  const session = await getSession({ req });
+
+  console.log(session);
+
   const client = await clientPromise;
-
   const db = client.db("time-tracker");
   const tasks = EJSON.serialize(await db
     .collection("tasktimemanager")
@@ -30,12 +34,13 @@ export async function getServerSideProps() {
   return {
     props: {
       tasks: serializedTasks,
-      projects
+      projects,
+      userSession: session
     }
   }
 }
 
-export default function Home({ tasks, projects }) {
+export default function Home({ tasks, projects, userSession }) {
   const [children, setChildren] = useState(true)
   const [tasksData, setTasksData] = useState(tasks);
   const [startTimer, setStartTimer] = useState(false);
@@ -47,7 +52,7 @@ export default function Home({ tasks, projects }) {
     seconds: 0
   });
 
-  console.log(projects)
+  // console.log(projects)
 
   const startCounter = () => {
     setStartTimer(true);
@@ -100,7 +105,7 @@ export default function Home({ tasks, projects }) {
   // }
 
   useEffect(() => {
-
+    console.log('Session: ', userSession);
   }, [trackTime]);
 
   return (
