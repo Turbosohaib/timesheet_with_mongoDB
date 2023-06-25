@@ -9,38 +9,40 @@ import script from 'next/script';
 import Sidebar from "../../components/sidebar"
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
 import { getSession } from "next-auth/react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]";
 
+export async function getServerSideProps(ctx) {
+  const userSession = await getServerSession(ctx.req, ctx.res, authOptions);
 
-export async function getServerSideProps({ req }) {
-  const session = await getSession({ req });
-
-  console.log(session);
+  delete userSession.user.name;
+  delete userSession.user.image;
 
   const client = await clientPromise;
   const db = client.db("time-tracker");
-  const tasks = EJSON.serialize(await db
+  const userTasks = EJSON.serialize(await db
     .collection("tasktimemanager")
-    .find({})
+    .find({ userId: userSession.user.id })
     .toArray());
 
-  const projectDb = client.db("Projects_timesheet")
-  const projects = EJSON.serialize(await projectDb
+  const projectDb = client.db("Projects_timesheet");
+  const userProjects = EJSON.serialize(await projectDb
     .collection("project")
-    .find({})
+    .find({ userId: userSession.user.id })
     .toArray());
 
-  const serializedTasks = EJSON.serialize(calculateTotalSeconds(tasks));
+
+  const serializedTasks = EJSON.serialize(calculateTotalSeconds(userTasks));
 
   return {
     props: {
       tasks: serializedTasks,
-      projects,
-      userSession: session
+      projects: userProjects,
     }
   }
 }
 
-export default function Home({ tasks, projects, userSession }) {
+export default function Home({ tasks, projects }) {
   const [children, setChildren] = useState(true)
   const [tasksData, setTasksData] = useState(tasks);
   const [startTimer, setStartTimer] = useState(false);
@@ -52,7 +54,7 @@ export default function Home({ tasks, projects, userSession }) {
     seconds: 0
   });
 
-  // console.log(projects)
+
 
   const startCounter = () => {
     setStartTimer(true);
@@ -105,7 +107,6 @@ export default function Home({ tasks, projects, userSession }) {
   // }
 
   useEffect(() => {
-    console.log('Session: ', userSession);
   }, [trackTime]);
 
   return (

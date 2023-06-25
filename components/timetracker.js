@@ -1,9 +1,20 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { formatTime, unhideCurrentActiveParentChilds } from "../util/commonFunctions";
+import { getSession } from "next-auth/react";
 
+export async function getServerSideProps({ req }) {
 
-
+    // const userSession = await getSession({ req });
+    // console.log('session from client side: ', userSession)
+    // const result = await axios.post('api/tracktime', userSession)
+    // console.log(result);
+    return {
+        props: {
+            userSession
+        }
+    }
+}
 
 
 

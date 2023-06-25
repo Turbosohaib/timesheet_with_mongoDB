@@ -6,29 +6,34 @@ import Dropdown from '../components/dropdown';
 import Head from 'next/head'
 import { formatTime } from "../util/commonFunctions";
 import axios from "axios";
-import Link from 'next/link'
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]";
 
 
 
-export async function getServerSideProps() {
+export async function getServerSideProps(ctx) {
+
+    const userSession = await getServerSession(ctx.req, ctx.res, authOptions);
+
+
     const client = await clientPromise;
     const db = client.db("time-tracker");
-    const tasks = EJSON.serialize(await db
+    const userTasks = EJSON.serialize(await db
         .collection("tasktimemanager")
-        .find({})
+        .find({ userId: userSession.user.id })
         .toArray());
 
-    const projectDb = client.db("Projects_timesheet")
-    const projects = EJSON.serialize(await projectDb
+    const projectDb = client.db("Projects_timesheet");
+    const userProjects = EJSON.serialize(await projectDb
         .collection("project")
-        .find({})
+        .find({ userId: userSession.user.id })
         .toArray());
 
 
     return {
         props: {
-            tasks,
-            projects
+            tasks: userTasks,
+            projects: userProjects,
         }
     }
 }
@@ -36,7 +41,7 @@ export async function getServerSideProps() {
 
 
 export default function Timesheet({ tasks, projects }) {
-    const [projectName, setProjectName] = useState({})
+    const [projectName, setProjectName] = useState({ value: "" })
     const projectSum = [];
 
     function sumTimeForProject(project, tasks) {
@@ -80,13 +85,11 @@ export default function Timesheet({ tasks, projects }) {
         setProjectName((prevItem) => {
             return {
                 ...prevItem,
-                value: value
+                value: value,
             }
         })
 
     }
-
-    console.log(projectName)
 
     async function handleSubmit() {
         const result = await axios.post('/api/addProject', { projectName })

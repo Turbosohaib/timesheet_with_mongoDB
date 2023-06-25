@@ -6,7 +6,7 @@ import { EJSON } from "bson";
 
 // const uri = process.env.MONGODB_URI;
 
-export default NextAuth({
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -76,7 +76,9 @@ export default NextAuth({
   pages: {
     signIn: '/signin'
   }
-});
+}
+
+export default NextAuth(authOptions);
 
 // export async function connectToDatabase() {
 //   const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
